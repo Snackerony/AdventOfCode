@@ -1,9 +1,0 @@
-C:\Users\Andreas\source\repos\AdventOfCode\AdventOfCode\bin\Debug\AdventOfCode.exe.config
-C:\Users\Andreas\source\repos\AdventOfCode\AdventOfCode\bin\Debug\AdventOfCode.exe
-C:\Users\Andreas\source\repos\AdventOfCode\AdventOfCode\bin\Debug\AdventOfCode.pdb
-C:\Users\Andreas\source\repos\AdventOfCode\AdventOfCode\obj\Debug\AdventOfCode.csproj.AssemblyReference.cache
-C:\Users\Andreas\source\repos\AdventOfCode\AdventOfCode\obj\Debug\AdventOfCode.csproj.SuggestedBindingRedirects.cache
-C:\Users\Andreas\source\repos\AdventOfCode\AdventOfCode\obj\Debug\AdventOfCode.csproj.CoreCompileInputs.cache
-C:\Users\Andreas\source\repos\AdventOfCode\AdventOfCode\obj\Debug\AdventOfCode.exe
-C:\Users\Andreas\source\repos\AdventOfCode\AdventOfCode\obj\Debug\AdventOfCode.pdb
-C:\Users\Andreas\source\repos\AdventOfCode\AdventOfCode\bin\Debug\input.txt
