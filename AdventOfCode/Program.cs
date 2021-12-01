@@ -18,11 +18,12 @@ namespace AdventOfCode
         {
             var previousNumber = int.MaxValue;
             int counter = 0;
-            List<string> input = GetInput();
-            foreach (var item in input)
+            string[] input = GetInput().ToArray();
+            for (int i = 0; i < input.Length; i++)
             {
-                var currentNumber = int.Parse(item);
-                if(currentNumber > previousNumber)
+                if (i + 2 >= input.Length) break;
+                var currentNumber = int.Parse(input[i]) + int.Parse(input[i + 1]) + int.Parse(input[i + 2]);
+                if (currentNumber > previousNumber)
                 {
                     counter++;
                 }
