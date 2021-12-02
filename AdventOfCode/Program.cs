@@ -19,18 +19,20 @@ namespace AdventOfCode
             List<string> input = GetInput();
             int depth = 0;
             int forward = 0;
+            int aim = 0;
             foreach (var item in input)
             {
                 string[] line = item.Split(' ');
                 switch (line[0]) {
                     case "forward":
                         forward += int.Parse(line[1]);
+                        depth += (aim * int.Parse(line[1]));
                         break;
                     case "down":
-                        depth += int.Parse(line[1]);
+                        aim += int.Parse(line[1]);
                         break;
                     case "up":
-                        depth -= int.Parse(line[1]);
+                        aim -= int.Parse(line[1]);
                         break;
                         default:
                         break;
