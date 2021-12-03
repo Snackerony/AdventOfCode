@@ -17,28 +17,37 @@ namespace AdventOfCode
         static void Main(string[] args)
         {
             List<string> input = GetInput();
-            int depth = 0;
-            int forward = 0;
-            int aim = 0;
-            foreach (var item in input)
+            int length = input[0].ToCharArray().Length;
+            string gamma = "";
+            string epsilon = "";
+            for (int i = 0; i < length; i++)
             {
-                string[] line = item.Split(' ');
-                switch (line[0]) {
-                    case "forward":
-                        forward += int.Parse(line[1]);
-                        depth += (aim * int.Parse(line[1]));
-                        break;
-                    case "down":
-                        aim += int.Parse(line[1]);
-                        break;
-                    case "up":
-                        aim -= int.Parse(line[1]);
-                        break;
-                        default:
-                        break;
+                int zeroCount = 0;
+                int oneCount = 0;
+                foreach (var item in input)
+                {
+                    if (item.ToCharArray()[i] == '0')
+                    {
+                        zeroCount++;
+                    }
+                    else 
+                    { 
+                        oneCount++; 
+                    }
+                }
+                if(zeroCount > oneCount)
+                {
+                    gamma += "0";
+                    epsilon += "1";
+                }
+                else
+                {
+                    gamma += "1";
+                    epsilon += "0";
                 }
             }
-            Console.WriteLine($"{depth * forward}");
+            int solution = Convert.ToInt32(gamma, 2) * Convert.ToInt32(epsilon, 2);
+            Console.WriteLine(solution);
             Console.ReadKey();  
 
         }
