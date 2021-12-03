@@ -20,36 +20,83 @@ namespace AdventOfCode
             int length = input[0].ToCharArray().Length;
             string gamma = "";
             string epsilon = "";
+            List<string> inputCopy = new List<string>();
+            foreach (var item in input)
+            {
+                inputCopy.Add(item);
+            }
+            FindGamma(length, ref gamma, inputCopy);
+            FindEpsilon(length, ref epsilon, inputCopy);
+            int solution = Convert.ToInt32(gamma, 2) * Convert.ToInt32(epsilon, 2);
+            Console.WriteLine(solution);
+            Console.ReadKey();
+
+        }
+
+        private static void FindGamma(int length, ref string gamma, List<string> inputCopy)
+        {
             for (int i = 0; i < length; i++)
             {
                 int zeroCount = 0;
                 int oneCount = 0;
-                foreach (var item in input)
+                foreach (var item in inputCopy)
                 {
                     if (item.ToCharArray()[i] == '0')
                     {
                         zeroCount++;
                     }
-                    else 
-                    { 
-                        oneCount++; 
+                    else
+                    {
+                        oneCount++;
                     }
                 }
-                if(zeroCount > oneCount)
+                if (zeroCount > oneCount)
                 {
-                    gamma += "0";
-                    epsilon += "1";
+                    inputCopy = inputCopy.FindAll(item => item.ToCharArray()[i] == ('0'));
                 }
                 else
                 {
-                    gamma += "1";
-                    epsilon += "0";
+                    inputCopy = inputCopy.FindAll(item => item.ToCharArray()[i] == ('1'));
+                }
+                if (inputCopy.Count == 1)
+                {
+                    gamma = inputCopy[0];
+                    break;
                 }
             }
-            int solution = Convert.ToInt32(gamma, 2) * Convert.ToInt32(epsilon, 2);
-            Console.WriteLine(solution);
-            Console.ReadKey();  
+        }
 
+        private static void FindEpsilon(int length, ref string epsilon, List<string> inputCopy)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                int zeroCount = 0;
+                int oneCount = 0;
+                foreach (var item in inputCopy)
+                {
+                    if (item.ToCharArray()[i] == '0')
+                    {
+                        zeroCount++;
+                    }
+                    else
+                    {
+                        oneCount++;
+                    }
+                }
+                if (zeroCount > oneCount)
+                {
+                    inputCopy = inputCopy.FindAll(item => item.ToCharArray()[i] == ('1'));
+                }
+                else
+                {
+                    inputCopy = inputCopy.FindAll(item => item.ToCharArray()[i] == ('0'));
+                }
+                if (inputCopy.Count == 1)
+                {
+                    epsilon = inputCopy[0];
+                    break;
+                }
+            }
         }
     }
 }
