@@ -17,86 +17,123 @@ namespace AdventOfCode
         static void Main(string[] args)
         {
             List<string> input = GetInput();
-            int length = input[0].ToCharArray().Length;
-            string gamma = "";
-            string epsilon = "";
-            List<string> inputCopy = new List<string>();
-            foreach (var item in input)
+            List<int> winningNumbers = input[0].Split(',').ToList().ConvertAll(int.Parse);
+            List<int> drawnNumbers = new List<int>();
+            drawnNumbers.Add(winningNumbers[0]);
+            drawnNumbers.Add(winningNumbers[1]);
+            drawnNumbers.Add(winningNumbers[2]);
+            drawnNumbers.Add(winningNumbers[3]);
+            drawnNumbers.Add(winningNumbers[4]);
+            input.RemoveAt(0);
+            input.RemoveAt(0);
+            List<List<string>> fields = GenerateFields(input);
+            List<string> winningBoard = new List<string>();
+            for (int i = 5; i < winningNumbers.Count; i++)
             {
-                inputCopy.Add(item);
+                if(drawnNumbers.Last() == 53)
+                {
+                    Console.WriteLine("Here");
+                }
+                bool skip = false;
+                foreach (var item in fields)
+                {
+                    if (CheckHorizintal(item, drawnNumbers) || CheckVertical(item, drawnNumbers)) {
+                        winningBoard = item;
+                        skip = true; 
+                        break; 
+                    }
+                }
+                if (skip) break;
+                drawnNumbers.Add((int)winningNumbers[i]);
             }
-            FindGamma(length, ref gamma, inputCopy);
-            FindEpsilon(length, ref epsilon, inputCopy);
-            int solution = Convert.ToInt32(gamma, 2) * Convert.ToInt32(epsilon, 2);
-            Console.WriteLine(solution);
+            int count = CountFields(winningBoard, drawnNumbers); 
+            Console.WriteLine($"Solution: {count * drawnNumbers.Last()}");
             Console.ReadKey();
-
         }
 
-        private static void FindGamma(int length, ref string gamma, List<string> inputCopy)
+        private static int CountFields(List<string> fields, List<int> drawnNumbers)
         {
-            for (int i = 0; i < length; i++)
+            int counter = 0;
+            foreach (var item in fields)
             {
-                int zeroCount = 0;
-                int oneCount = 0;
-                foreach (var item in inputCopy)
+                var numbers = item.Split(' ').ToList().FindAll(i => !string.IsNullOrEmpty(i));
+                foreach (var num in numbers)
                 {
-                    if (item.ToCharArray()[i] == '0')
+                    if (!drawnNumbers.Contains(int.Parse(num)))
                     {
-                        zeroCount++;
-                    }
-                    else
-                    {
-                        oneCount++;
+                        counter += int.Parse(num);
                     }
                 }
-                if (zeroCount > oneCount)
+            }
+            return counter;
+        }
+
+        private static bool CheckVertical(List<string> fields, List<int> drawnNumbers)
+        {
+            List<List<int>> fieldList = new List<List<int>>();
+            foreach (var item in fields)
+            {
+                fieldList.Add(item.Split(' ').ToList().FindAll(i => !string.IsNullOrEmpty(i)).ConvertAll(int.Parse));
+            }
+            bool didFinish = true;
+            for (int i = 0; i < fieldList[0].Count; i++) 
+            {
+                didFinish = true;
+                foreach (var item in fieldList)
                 {
-                    inputCopy = inputCopy.FindAll(item => item.ToCharArray()[i] == ('0'));
+                    if (!drawnNumbers.Contains(item[i]))
+                    {
+                        didFinish = false;
+                    }
+                }
+                if (didFinish)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool CheckHorizintal(List<string> fields, List<int> drawnNumbers)
+        {
+            bool didFinish = true;
+            foreach (var item in fields)
+            {
+                didFinish = true;
+                var numbers = item.Split(' ').ToList().FindAll(i => !string.IsNullOrEmpty(i));
+                foreach (var num in numbers)
+                {
+                    if (!drawnNumbers.Contains(int.Parse(num)))
+                    {
+                        didFinish = false;
+                    }
+                }
+                if (didFinish)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static List<List<string>> GenerateFields(List<string> input)
+        {
+            List<List<string>> vs = new List<List<string>>();
+            List<string> fields = new List<string>();
+            foreach (string line in input)
+            {
+                if (String.IsNullOrEmpty(line))
+                {
+                    vs.Add(fields);
+                    fields = new List<string>();
                 }
                 else
                 {
-                    inputCopy = inputCopy.FindAll(item => item.ToCharArray()[i] == ('1'));
-                }
-                if (inputCopy.Count == 1)
-                {
-                    gamma = inputCopy[0];
-                    break;
+                    fields.Add(line);
                 }
             }
-        }
-
-        private static void FindEpsilon(int length, ref string epsilon, List<string> inputCopy)
-        {
-            for (int i = 0; i < length; i++)
-            {
-                int zeroCount = 0;
-                int oneCount = 0;
-                foreach (var item in inputCopy)
-                {
-                    if (item.ToCharArray()[i] == '0')
-                    {
-                        zeroCount++;
-                    }
-                    else
-                    {
-                        oneCount++;
-                    }
-                }
-                if (zeroCount > oneCount)
-                {
-                    inputCopy = inputCopy.FindAll(item => item.ToCharArray()[i] == ('1'));
-                }
-                else
-                {
-                    inputCopy = inputCopy.FindAll(item => item.ToCharArray()[i] == ('0'));
-                }
-                if (inputCopy.Count == 1)
-                {
-                    epsilon = inputCopy[0];
-                    break;
-                }
-            }
+            vs.Add(fields);
+            return vs;
         }
     }
 }
