@@ -26,24 +26,25 @@ namespace AdventOfCode
             drawnNumbers.Add(winningNumbers[4]);
             input.RemoveAt(0);
             input.RemoveAt(0);
-            List<List<string>> fields = GenerateFields(input);
+            List<Fields> fields = GenerateFields(input);
             List<string> winningBoard = new List<string>();
             for (int i = 5; i < winningNumbers.Count; i++)
             {
-                if(drawnNumbers.Last() == 53)
-                {
-                    Console.WriteLine("Here");
-                }
-                bool skip = false;
+                bool willBreak = false;
                 foreach (var item in fields)
                 {
-                    if (CheckHorizintal(item, drawnNumbers) || CheckVertical(item, drawnNumbers)) {
-                        winningBoard = item;
-                        skip = true; 
-                        break; 
+                    if (!item.didFinish && (CheckHorizintal(item.field, drawnNumbers) || CheckVertical(item.field, drawnNumbers))) {
+                        if (fields.FindAll(m => m.didFinish == false).Count == 1)
+                        {
+                            Fields lastField = fields.Find(m => m.didFinish == false);
+                            winningBoard = lastField.field;
+                            willBreak = true;
+                            break;
+                        }
+                        item.didFinish = true;
                     }
                 }
-                if (skip) break;
+                if (willBreak) break;
                 drawnNumbers.Add((int)winningNumbers[i]);
             }
             int count = CountFields(winningBoard, drawnNumbers); 
@@ -116,24 +117,42 @@ namespace AdventOfCode
             return false;
         }
 
-        private static List<List<string>> GenerateFields(List<string> input)
+        private static List<Fields> GenerateFields(List<string> input)
         {
-            List<List<string>> vs = new List<List<string>>();
+            int id = 1;
+            List<Fields> vs = new List<Fields>();
+            Fields field = new Fields();
+            field.id = id;
+            id++;
             List<string> fields = new List<string>();
             foreach (string line in input)
             {
                 if (String.IsNullOrEmpty(line))
                 {
-                    vs.Add(fields);
+                    field.field = fields;
+                    field.didFinish = false;
+                    vs.Add(field);
                     fields = new List<string>();
+                    field = new Fields();
+                    field.id = id;
+                    id++;
                 }
                 else
                 {
                     fields.Add(line);
                 }
             }
-            vs.Add(fields);
+            field.field = fields;
+            field.didFinish = false;
+            vs.Add(field);
             return vs;
         }
+    }
+
+    class Fields
+    {
+        public int id;
+        public List<string> field;
+        public bool didFinish;
     }
 }
