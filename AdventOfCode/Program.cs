@@ -71,6 +71,45 @@ namespace AdventOfCode
                         }
                     }
                 }
+                else
+                {
+                    Point currentPoint = new Point();
+                    currentPoint.x = item.fromPoint.x;
+                    currentPoint.y = item.fromPoint.y;
+                    while (true)
+                    {
+                        PointCount foundPoint = points.Find(m => m.point.y == currentPoint.y && m.point.x == currentPoint.x);
+                        if (foundPoint == null)
+                        {
+                            PointCount pointCount = new PointCount();
+                            Point point = new Point();
+                            point.y = currentPoint.y;
+                            point.x = currentPoint.x;
+                            pointCount.point = point;
+                            pointCount.count = 1;
+                            points.Add(pointCount);
+                        }
+                        else
+                        {
+                            foundPoint.count++;
+                        }
+                        if (currentPoint.x == item.toPoint.x && currentPoint.y == item.toPoint.y) break;
+                        if (currentPoint.y != item.toPoint.y)
+                        {
+                            if (currentPoint.y < item.toPoint.y)
+                                currentPoint.y++;
+                            else
+                                currentPoint.y--;
+                        }
+                        if (currentPoint.x != item.toPoint.x)
+                        {
+                            if (currentPoint.x < item.toPoint.x)
+                                currentPoint.x++;
+                            else
+                                currentPoint.x--;
+                        }                        
+                    }
+                }
             }
             return points;
         }
