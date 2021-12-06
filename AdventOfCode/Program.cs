@@ -17,142 +17,103 @@ namespace AdventOfCode
         static void Main(string[] args)
         {
             List<string> input = GetInput();
-            List<int> winningNumbers = input[0].Split(',').ToList().ConvertAll(int.Parse);
-            List<int> drawnNumbers = new List<int>();
-            drawnNumbers.Add(winningNumbers[0]);
-            drawnNumbers.Add(winningNumbers[1]);
-            drawnNumbers.Add(winningNumbers[2]);
-            drawnNumbers.Add(winningNumbers[3]);
-            drawnNumbers.Add(winningNumbers[4]);
-            input.RemoveAt(0);
-            input.RemoveAt(0);
-            List<Fields> fields = GenerateFields(input);
-            List<string> winningBoard = new List<string>();
-            for (int i = 5; i < winningNumbers.Count; i++)
-            {
-                bool willBreak = false;
-                foreach (var item in fields)
-                {
-                    if (!item.didFinish && (CheckHorizintal(item.field, drawnNumbers) || CheckVertical(item.field, drawnNumbers))) {
-                        if (fields.FindAll(m => m.didFinish == false).Count == 1)
-                        {
-                            Fields lastField = fields.Find(m => m.didFinish == false);
-                            winningBoard = lastField.field;
-                            willBreak = true;
-                            break;
-                        }
-                        item.didFinish = true;
-                    }
-                }
-                if (willBreak) break;
-                drawnNumbers.Add((int)winningNumbers[i]);
-            }
-            int count = CountFields(winningBoard, drawnNumbers); 
-            Console.WriteLine($"Solution: {count * drawnNumbers.Last()}");
+            List<FromTo> fromTos = GetPoints(input);
+            List<PointCount> pointCounts = DrawLines(fromTos);
+            Console.WriteLine(pointCounts.FindAll(m => m.count > 1).Count);
             Console.ReadKey();
         }
 
-        private static int CountFields(List<string> fields, List<int> drawnNumbers)
+        private static List<PointCount> DrawLines(List<FromTo> fromTos)
         {
-            int counter = 0;
-            foreach (var item in fields)
+            List<PointCount> points = new List<PointCount>();
+            foreach (var item in fromTos)
             {
-                var numbers = item.Split(' ').ToList().FindAll(i => !string.IsNullOrEmpty(i));
-                foreach (var num in numbers)
+                if(item.fromPoint.x == item.toPoint.x)
                 {
-                    if (!drawnNumbers.Contains(int.Parse(num)))
+                    for (int i = Math.Min(item.fromPoint.y, item.toPoint.y); i <= Math.Max(item.fromPoint.y, item.toPoint.y); i++)
                     {
-                        counter += int.Parse(num);
+                        PointCount foundPoint = points.Find(m => m.point.x == item.fromPoint.x && m.point.y == i);
+                        if(foundPoint == null)
+                        {
+                            PointCount pointCount = new PointCount();
+                            Point point = new Point();
+                            point.x = item.fromPoint.x;
+                            point.y = i;
+                            pointCount.point = point;
+                            pointCount.count = 1;
+                            points.Add(pointCount);
+                        }
+                        else
+                        {
+                            foundPoint.count++;
+                        }
+                    }
+                }
+                else if (item.fromPoint.y == item.toPoint.y)
+                {
+
+                    for (int i = Math.Min(item.fromPoint.x, item.toPoint.x); i <= Math.Max(item.fromPoint.x, item.toPoint.x); i++)
+                    {
+                        PointCount foundPoint = points.Find(m => m.point.y == item.fromPoint.y && m.point.x == i);
+                        if (foundPoint == null)
+                        {
+                            PointCount pointCount = new PointCount();
+                            Point point = new Point();
+                            point.y = item.fromPoint.y;
+                            point.x = i;
+                            pointCount.point = point;
+                            pointCount.count = 1;
+                            points.Add(pointCount);
+                        }
+                        else
+                        {
+                            foundPoint.count++;
+                        }
                     }
                 }
             }
-            return counter;
+            return points;
         }
 
-        private static bool CheckVertical(List<string> fields, List<int> drawnNumbers)
+        private static List<FromTo> GetPoints(List<string> input)
         {
-            List<List<int>> fieldList = new List<List<int>>();
-            foreach (var item in fields)
+            List<FromTo> points = new List<FromTo>();
+            foreach (var item in input)
             {
-                fieldList.Add(item.Split(' ').ToList().FindAll(i => !string.IsNullOrEmpty(i)).ConvertAll(int.Parse));
+                string[] split = item.Replace(" ->", "").Split(' ');
+                Point fromPoint = new Point()
+                {
+                    x = int.Parse(split[0].Split(',')[0]),
+                    y = int.Parse(split[0].Split(',')[1])
+                };
+                Point toPoint = new Point()
+                {
+                    x = int.Parse(split[1].Split(',')[0]),
+                    y = int.Parse(split[1].Split(',')[1])
+                };
+                FromTo point = new FromTo();
+                point.fromPoint = fromPoint;
+                point.toPoint = toPoint;
+                points.Add(point);
             }
-            bool didFinish = true;
-            for (int i = 0; i < fieldList[0].Count; i++) 
-            {
-                didFinish = true;
-                foreach (var item in fieldList)
-                {
-                    if (!drawnNumbers.Contains(item[i]))
-                    {
-                        didFinish = false;
-                    }
-                }
-                if (didFinish)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private static bool CheckHorizintal(List<string> fields, List<int> drawnNumbers)
-        {
-            bool didFinish = true;
-            foreach (var item in fields)
-            {
-                didFinish = true;
-                var numbers = item.Split(' ').ToList().FindAll(i => !string.IsNullOrEmpty(i));
-                foreach (var num in numbers)
-                {
-                    if (!drawnNumbers.Contains(int.Parse(num)))
-                    {
-                        didFinish = false;
-                    }
-                }
-                if (didFinish)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private static List<Fields> GenerateFields(List<string> input)
-        {
-            int id = 1;
-            List<Fields> vs = new List<Fields>();
-            Fields field = new Fields();
-            field.id = id;
-            id++;
-            List<string> fields = new List<string>();
-            foreach (string line in input)
-            {
-                if (String.IsNullOrEmpty(line))
-                {
-                    field.field = fields;
-                    field.didFinish = false;
-                    vs.Add(field);
-                    fields = new List<string>();
-                    field = new Fields();
-                    field.id = id;
-                    id++;
-                }
-                else
-                {
-                    fields.Add(line);
-                }
-            }
-            field.field = fields;
-            field.didFinish = false;
-            vs.Add(field);
-            return vs;
+            return points;
         }
     }
 
-    class Fields
+    class Point
     {
-        public int id;
-        public List<string> field;
-        public bool didFinish;
+        public int x;
+        public int y;
+    }
+
+    class FromTo
+    {
+        public Point fromPoint;
+        public Point toPoint;
+    }
+
+    class PointCount {
+        public Point point;
+        public int count;
     }
 }
