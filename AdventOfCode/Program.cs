@@ -16,29 +16,63 @@ namespace AdventOfCode
 
         static void Main(string[] args)
         {
+            int days = 256;
             List<int> input = GetInput().First().Split(',').ToList().ConvertAll(int.Parse);
-            for (int i = 0; i < 80; i++)
+            List<FishCountSaver> saver = new List<FishCountSaver>();
+            long fishCount = 0;
+            foreach (var item in input)
             {
-                int addCount = 0;
-                for (int j = 0; j < input.Count; j++)
+                if (saver.Find(m => m.startFishes == item && m.daysLeft == days) == null)
                 {
-                    if(input[j] == 0)
+                    long prod = ProducesFish(item, days, ref saver);
+                    saver.Add(new FishCountSaver()
                     {
-                        input[j] = 6;
-                        addCount++;
-                    }
-                    else
-                    {
-                        input[j]--;
-                    }
+                        producedFishes = prod,
+                        startFishes = item,
+                        daysLeft = days
+                    });
                 }
-                for (int k = 0; k < addCount; k++)
-                {
-                    input.Add(8);
-                }                
+                fishCount += saver.Find(m => m.startFishes == item && m.daysLeft == days).producedFishes;
             }
-            Console.WriteLine(input.Count);
+            Console.WriteLine(fishCount);
             Console.ReadLine();
-        }       
+        }
+
+        static long ProducesFish(int lifeCycle, int daysLeft, ref List<FishCountSaver> saver)
+        {
+            long fishes = 1;
+            while (daysLeft > 0)
+            {
+                if (lifeCycle == 0)
+                {
+                    lifeCycle = 6;
+                    if (saver.Find(m => m.startFishes == 8 && m.daysLeft == (daysLeft - 1)) == null)
+                    {
+                        long prod = ProducesFish(8, (daysLeft - 1), ref saver);
+                        saver.Add(new FishCountSaver()
+                        {
+                            producedFishes = prod,
+                            startFishes = 8,
+                            daysLeft = (daysLeft - 1)
+                        });
+                    }
+                    fishes += saver.Find(m => m.startFishes == 8 && m.daysLeft == (daysLeft - 1)).producedFishes;
+                }
+                else
+                {
+                    lifeCycle--;
+                }
+                daysLeft--;
+            }
+            //Console.WriteLine(lifeCycle);
+            return fishes;
+        }
+    }
+
+    class FishCountSaver
+    {
+        public int startFishes;
+        public long producedFishes;
+        public int daysLeft;
     }
 }
