@@ -24,7 +24,11 @@ namespace AdventOfCode
                 int singleCounter = 0;
                 foreach (var item in input)
                 {
-                    singleCounter += Math.Max(i, item) - Math.Min(i, item);
+                    int maxMove = Math.Max(i, item) - Math.Min(i, item);
+                    for (int j = 1; j <= maxMove; j++)
+                    {
+                        singleCounter += j;
+                    }
                 }
                 counter.Add(new CrabCounter(singleCounter, i));
             }
