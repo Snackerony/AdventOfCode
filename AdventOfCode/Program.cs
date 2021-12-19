@@ -16,35 +16,21 @@ namespace AdventOfCode
 
         static void Main(string[] args)
         {
-            List<int> input = GetInput().First().Split(',').ToList().ConvertAll(int.Parse);
-            List<CrabCounter> counter = new List<CrabCounter>();
-            input.Sort();
-            for (int i = input.First(); i <= input.Last(); i++)
+            List<string> input = GetInput();
+            List<int> lengths = new List<int>() { 2,3,4,7};
+            int counter = 0;
+            foreach (string line in input)
             {
-                int singleCounter = 0;
-                foreach (var item in input)
+                string[] parts = line.Split('|')[1].Split(' ');
+                foreach (var item in parts)
                 {
-                    int maxMove = Math.Max(i, item) - Math.Min(i, item);
-                    for (int j = 1; j <= maxMove; j++)
-                    {
-                        singleCounter += j;
+                    if(!String.IsNullOrEmpty(item) && lengths.Contains(item.Count())){
+                        counter++;
                     }
                 }
-                counter.Add(new CrabCounter(singleCounter, i));
             }
-            counter.Sort((i,j) => i.fuel.CompareTo(j.fuel));
-            Console.WriteLine($"{counter.First().position} {counter.First().fuel}");
+            Console.WriteLine($"{counter}");
             Console.ReadLine();
         }
-    }
-    class CrabCounter
-    {
-        public CrabCounter(int fuel, int position)
-        {
-            this.fuel = fuel;
-            this.position = position;
-        }
-        public int fuel;
-        public int position;
     }
 }
